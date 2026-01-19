@@ -4,6 +4,7 @@ import { supabase } from "@/lib/supabase"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { revalidatePath } from "next/cache"
+import { Post } from "@/types"
 
 export async function createPost(formData: FormData) {
   const session = await getServerSession(authOptions)
@@ -18,7 +19,7 @@ export async function createPost(formData: FormData) {
   let famIds: string[] = []
   try {
     famIds = famIdsJson ? JSON.parse(famIdsJson) : []
-  } catch (e) {
+  } catch {
     return { error: "Invalid audience selection" }
   }
 
@@ -84,12 +85,18 @@ export async function getFeed() {
     .select('fam_id, fam:fams(owner_id)')
     .eq('user_id', userId)
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const ownedFamIds = myMemberships
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ?.filter((m: any) => m.fam.owner_id === userId)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     .map((m: any) => m.fam_id) || []
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const memberFamIds = myMemberships
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ?.filter((m: any) => m.fam.owner_id !== userId)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     .map((m: any) => m.fam_id) || []
 
   const allMyFamIds = [...ownedFamIds, ...memberFamIds]
@@ -125,10 +132,12 @@ export async function getFeed() {
   // - If I own a Fam the post is in: Visible.
   // - If Author is Owner of a Fam the post is in: Visible (in context of that Fam).
 
-  let visiblePosts = (rawPosts || []).filter((post: any) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const visiblePosts = (rawPosts || []).filter((post: any) => {
     if (post.author_id === userId) return true
 
     // Check visibility via any of the linked fams
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return post.post_fams.some((pf: any) => {
        const famId = pf.fam_id
        // Am I a member of this fam? (Query already filtered to my fams, but safe to check)
@@ -144,10 +153,10 @@ export async function getFeed() {
 
        return false
     })
-  })
+  }) as Post[]
 
   // Deduplicate posts (if any)
-  const uniquePosts = Array.from(new Map(visiblePosts.map((p: any) => [p.id, p])).values())
+  const uniquePosts = Array.from(new Map(visiblePosts.map((p) => [p.id, p])).values())
 
   return { posts: uniquePosts }
 }

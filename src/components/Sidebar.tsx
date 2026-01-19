@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Home, Compass, Users, User, LogOut, MessageCircle } from 'lucide-react'
+import { Home, Compass, Users, MessageCircle } from 'lucide-react'
 
 export function Sidebar() {
   return (

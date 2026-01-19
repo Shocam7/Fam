@@ -1,7 +1,6 @@
-
 import { getFamDetails } from "@/actions/fam-details"
 import { inviteUser } from "@/actions/fam"
-import { redirect } from "next/navigation"
+import { Post, Comment, FamMember } from "@/types"
 
 export default async function FamDetailsPage({ params }: { params: { famId: string } }) {
   const { famId } = params
@@ -14,8 +13,8 @@ export default async function FamDetailsPage({ params }: { params: { famId: stri
   // Supabase returns null instead of undefined sometimes, but our actions return types are loose.
   // We can assert or default.
   const fam = data.fam!
-  const members = data.members || []
-  const posts = data.posts || []
+  const members = (data.members || []) as FamMember[]
+  const posts = (data.posts || []) as Post[]
   const isOwner = data.isOwner
 
   return (
@@ -23,7 +22,7 @@ export default async function FamDetailsPage({ params }: { params: { famId: stri
       {/* Header */}
       <div className="bg-white p-6 rounded-lg shadow border-l-4" style={{ borderColor: 'var(--fam-primary)' }}>
         <h1 className="text-3xl font-bold">{fam.name}</h1>
-        {fam.vibe && <p className="text-gray-500 italic mt-1">"{fam.vibe}"</p>}
+        {fam.vibe && <p className="text-gray-500 italic mt-1">&quot;{fam.vibe}&quot;</p>}
 
         <div className="mt-4 flex gap-4 text-sm text-gray-600">
            <span>{isOwner ? 'You are the Owner' : 'You are a Member'}</span>
@@ -43,10 +42,10 @@ export default async function FamDetailsPage({ params }: { params: { famId: stri
                </div>
              ) : (
                <div className="space-y-4">
-                 {posts.map((post: any) => (
+                 {posts.map((post) => (
                    <div key={post.id} className="border-b pb-4 last:border-0 last:pb-0">
                      <div className="flex justify-between items-start">
-                       <div className="font-bold text-gray-800">{post.author.name}</div>
+                       <div className="font-bold text-gray-800">{post.author?.name}</div>
                        <div className="text-xs text-gray-400">{new Date(post.created_at).toLocaleDateString()}</div>
                      </div>
                      <p className="mt-2 text-gray-700">{post.content}</p>
@@ -54,9 +53,9 @@ export default async function FamDetailsPage({ params }: { params: { famId: stri
                      {/* Comments would go here */}
                      {post.comments && post.comments.length > 0 && (
                        <div className="mt-3 ml-4 space-y-2 border-l-2 pl-3">
-                         {post.comments.map((comment: any) => (
+                         {post.comments.map((comment: Comment) => (
                            <div key={comment.id} className="text-sm">
-                             <span className="font-semibold text-gray-600">{comment.author.name}: </span>
+                             <span className="font-semibold text-gray-600">{comment.author?.name}: </span>
                              <span className="text-gray-600">{comment.content}</span>
                            </div>
                          ))}
@@ -94,7 +93,7 @@ export default async function FamDetailsPage({ params }: { params: { famId: stri
           <div className="bg-white p-4 rounded-lg shadow">
             <h3 className="font-bold mb-3">Members ({members.length})</h3>
             <ul className="space-y-2">
-              {members.map((member: any) => (
+              {members.map((member: FamMember) => (
                 <li key={member.id} className="flex items-center gap-2">
                    <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-xs font-bold text-gray-600">
                      {member.user?.name?.[0]?.toUpperCase()}

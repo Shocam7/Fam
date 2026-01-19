@@ -31,7 +31,7 @@ export default function CreateFamPage() {
             placeholder="e.g. Cozy office nights, chaotic energy, pure wholesome fun..."
           />
           <p className="mt-2 text-sm text-gray-500">
-            We'll use AI to generate a color scheme based on this vibe.
+            We&apos;ll use AI to generate a color scheme based on this vibe.
           </p>
         </div>
 

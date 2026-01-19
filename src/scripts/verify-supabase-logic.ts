@@ -1,9 +1,11 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { supabase } from "@/lib/supabase"
 
 // Mock the Supabase client behavior for local verification without credentials
 // This script simulates the "Fam Details" privacy logic test.
 
 // Mock Data
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const users = [
   { id: 'userA', name: 'User A' },
   { id: 'userB', name: 'User B' },

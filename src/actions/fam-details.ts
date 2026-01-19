@@ -3,6 +3,7 @@
 import { supabase } from "@/lib/supabase"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
+import { Post, Comment, FamMember } from "@/types"
 
 export async function getFamDetails(famId: string) {
   const session = await getServerSession(authOptions)
@@ -74,7 +75,8 @@ export async function getFamDetails(famId: string) {
     .order('post(created_at)', { ascending: false }) // Sort needs care with nested, might need manual sort or view
 
   // Flatten structure
-  let posts = postsInFam ? postsInFam.map((pf: any) => pf.post) : []
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let posts: Post[] = postsInFam ? postsInFam.map((pf: any) => pf.post) : []
 
   // Sort manually if nested sort didn't work (Supabase nested sort is tricky)
   posts.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
@@ -90,7 +92,7 @@ export async function getFamDetails(famId: string) {
   if (!isOwner) {
     posts.forEach(post => {
       if (post.comments) {
-        post.comments = post.comments.filter((c: any) =>
+        post.comments = post.comments.filter((c: Comment) =>
           c.author_id === fam.owner_id || c.author_id === userId
         )
       }
@@ -99,7 +101,7 @@ export async function getFamDetails(famId: string) {
 
   return {
     fam,
-    members,
+    members: members as FamMember[],
     posts,
     isOwner,
     currentUserId: userId

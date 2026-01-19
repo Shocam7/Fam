@@ -1,9 +1,9 @@
-
 import { getFeed } from "@/actions/post"
 import { getFams } from "@/actions/fam"
 import { CreatePost } from "@/components/CreatePost"
 import Link from "next/link"
 import { Plus } from "lucide-react"
+import { Post } from "@/types"
 
 export default async function FeedPage() {
   const { posts } = await getFeed()
@@ -19,7 +19,7 @@ export default async function FeedPage() {
         <CreatePost fams={allFams} />
       ) : (
         <div className="bg-blue-50 p-4 rounded-lg text-blue-800 mb-6">
-          <p>You haven't joined any Fams yet.</p>
+          <p>You haven&apos;t joined any Fams yet.</p>
           <Link href="/fams/create" className="underline font-bold">Create a Fam</Link> or wait for an invite!
         </div>
       )}
@@ -35,15 +35,15 @@ export default async function FeedPage() {
              <p className="text-gray-500 text-lg">Create or join a fam to see updates.</p>
           </div>
         ) : (
-          posts.map((post: any) => (
+          posts.map((post: Post) => (
             <div key={post.id} className="bg-white p-6 rounded-lg shadow">
               <div className="flex justify-between items-start mb-3">
                 <div className="flex items-center gap-3">
                    <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center font-bold text-indigo-700">
-                     {post.author.name?.[0]?.toUpperCase()}
+                     {post.author?.name?.[0]?.toUpperCase()}
                    </div>
                    <div>
-                     <div className="font-bold text-gray-900">{post.author.name}</div>
+                     <div className="font-bold text-gray-900">{post.author?.name}</div>
                      <div className="text-xs text-gray-500">
                        {new Date(post.created_at).toLocaleDateString()}
                        <span className="mx-1">•</span>

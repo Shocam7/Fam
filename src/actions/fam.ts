@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
+import { Fam } from "@/types"
 
 export async function createFam(formData: FormData) {
   const session = await getServerSession(authOptions)
@@ -82,13 +83,14 @@ export async function getFams() {
   // Let's just iterate and fetch counts? N+1 problem.
   // For MVP, we will skip the member count on the list view or mock it.
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const fams = members.map((m: any) => ({
     ...m.fam,
     _count: { members: 0 } // Placeholder
-  }))
+  })) as Fam[]
 
-  const created = fams.filter((f: any) => f.owner_id === session.user.id)
-  const joined = fams.filter((f: any) => f.owner_id !== session.user.id)
+  const created = fams.filter((f) => f.owner_id === session.user.id)
+  const joined = fams.filter((f) => f.owner_id !== session.user.id)
 
   return { created, joined }
 }
